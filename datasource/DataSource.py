@@ -1,14 +1,24 @@
+from typing import List
+from pydantic import BaseModel
 import requests
 
+
+# Out data
+class Item(BaseModel):
+    headline: str
+    link: str
+    source: str
+
+
 class DataSource:
-    def __init__(self, config, sources):
+    def __init__(self, config: object, sources: List[object]):
         self.sources = sources
         self.data = []
         self.response = {"data": self.data, "errors": ""}
         self.NEWSAPI_API_KEY = config['NEWSAPI_API_KEY']
-
+        
     
-    def fetch_data(self, query_string):
+    def fetch_data(self, query_string: str):
         try:
             # Loop through all sources or apis
             for source in self.sources:
@@ -26,7 +36,8 @@ class DataSource:
 
                 else:
                     # If source or api does not exist
-                    self.response["errors"]  = f"The source { source['name'] } is not defined! Please use newsapi or reddit."
+                    # self.response["errors"]  = f"The source { source['name'] } is not defined! Please use newsapi or reddit."
+                    pass
 
             return self.response
         except Exception as e:
@@ -34,12 +45,14 @@ class DataSource:
 
     
     # The method transforms reddit response data
-    def transform_reddit_data(self, data, source):
+    def transform_reddit_data(self, data: List[object], source: str):
         for response in data:
-            self.data.append({ "headline": response["data"]["title"], "link": response["data"]["url"], "source": source })
+            item = Item(**{ "headline": response["data"]["title"], "link": response["data"]["url"], "source": source })
+            self.data.append(item)
 
     # The method transforms newsapi response data
-    def transform_newsapi_data(self, data, source):
+    def transform_newsapi_data(self, data: List[object], source: str):
         for response in data:
-            self.data.append({ "headline": response["title"], "link": response["url"], "source": source })
+            item = Item(**{ "headline": response["title"], "link": response["url"], "source": source })
+            self.data.append(item)
 
