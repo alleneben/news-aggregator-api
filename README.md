@@ -65,6 +65,7 @@ Request
 ```
 
 Response
+```
 {
   "data": [
     {
@@ -80,3 +81,4 @@ Response
   ],
   "errors": ""
 }
+```
