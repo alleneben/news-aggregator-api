@@ -1,16 +1,16 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import requests
 
 
 # Out data
 class Item(BaseModel):
-    headline: str
-    link: str
-    source: str
+    headline: str = Field(default=None)
+    link: str     = Field(default=None)
+    source: str   = Field(default=None)
 
 
-class DataSource:
+class Service:
     def __init__(self, config: object, sources: List[object]):
         self.sources = sources
         self.data = []
@@ -18,7 +18,7 @@ class DataSource:
         self.NEWSAPI_API_KEY = config['NEWSAPI_API_KEY']
         
     
-    def fetch_data(self, query_string: str):
+    def fetch_data(self, query_string: str = "*"):
         try:
             # Loop through all sources or apis
             for source in self.sources:
@@ -36,14 +36,13 @@ class DataSource:
 
                 else:
                     # If source or api does not exist
-                    # self.response["errors"]  = f"The source { source['name'] } is not defined! Please use newsapi or reddit."
+                    self.response["errors"]  = f"The source { source['name'] } is not defined! Please use newsapi or reddit."
                     pass
 
             return self.response
         except Exception as e:
             return { "error": str(e) }
 
-    
     # The method transforms reddit response data
     def transform_reddit_data(self, data: List[object], source: str):
         for response in data:
